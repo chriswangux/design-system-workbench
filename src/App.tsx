@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { HashRouter, Routes, Route, Navigate } from 'react-router';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { TopBar } from '@/components/shell/TopBar';
 import { allRoutes, LazyTool } from '@/router/routes';
@@ -29,12 +29,10 @@ function AppShell() {
   );
 }
 
-const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
-
 export default function App() {
   return (
-    <BrowserRouter basename={basename}>
+    <HashRouter>
       <AppShell />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
