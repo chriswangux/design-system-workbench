@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
 import { useTokenStore } from '@/core/store/tokenStore';
 import { flattenTokenTree } from '@/core/tokens/resolve';
-import { isAlias, type Token, type TokenType, type TokenTier, type TokenTree, type TokenGroup } from '@/core/tokens/types';
+import { isAlias, type Token, type TokenType, type TokenTier, type TokenTree } from '@/core/tokens/types';
 
 const TOKEN_TYPES: TokenType[] = [
   'color', 'dimension', 'fontFamily', 'fontWeight', 'duration', 'cubicBezier',

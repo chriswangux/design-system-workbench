@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Copy, Check } from 'lucide-react';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
 import { SliderWithInput } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';
 import { createColor, toHex, gamutMap } from '@/core/engine/color/oklch';
-import { simulateCVD, CVD_TYPES, type CVDType } from '@/core/engine/color/cvdSimulation';
-import type { ColorValue } from '@/core/tokens/types';
+import { simulateCVD, CVD_TYPES } from '@/core/engine/color/cvdSimulation';
+import type { ColorValue, TokenGroup } from '@/core/tokens/types';
 
 type PaletteType = 'sequential' | 'diverging' | 'categorical';
 type HueStrategy = 'equidistant' | 'warm-cool' | 'analogous';
@@ -148,6 +147,14 @@ function computeDistinguishability(colors: ColorValue[]): number {
 }
 
 function PaletteSwatches({ colors, label }: { colors: ColorValue[]; label?: string }) {
+  const [copiedHex, setCopiedHex] = useState<string | null>(null);
+
+  const handleCopyHex = (hex: string) => {
+    navigator.clipboard.writeText(hex);
+    setCopiedHex(hex);
+    setTimeout(() => setCopiedHex(null), 1500);
+  };
+
   return (
     <div>
       {label && (
@@ -273,13 +280,6 @@ export default function ChartPaletteGeneratorTool() {
   const storedConfig = useTokenStore((s) => s.generatorConfigs['chart-palette']) as ChartPaletteConfig | undefined;
 
   const [config, setConfig] = useState<ChartPaletteConfig>(storedConfig ?? DEFAULT_CONFIG);
-  const [copiedHex, setCopiedHex] = useState<string | null>(null);
-
-  const handleCopyHex = (hex: string) => {
-    navigator.clipboard.writeText(hex);
-    setCopiedHex(hex);
-    setTimeout(() => setCopiedHex(null), 1500);
-  };
 
   const colors = useMemo(() => generatePalette(config), [config]);
 
@@ -304,7 +304,7 @@ export default function ChartPaletteGeneratorTool() {
 
   // Write tokens to store
   useEffect(() => {
-    const tokenGroup: Record<string, unknown> = {
+    const tokenGroup: TokenGroup = {
       $description: `Chart palette - ${config.paletteType}`,
     };
     colors.forEach((color, i) => {

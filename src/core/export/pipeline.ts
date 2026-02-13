@@ -1,7 +1,7 @@
 import type { TokenTree } from '@/core/tokens/types';
-import { formatCSS, type CSSExportOptions } from './formatters/cssCustomProperties';
+import { formatCSS } from './formatters/cssCustomProperties';
 import { formatDTCGJson } from './formatters/jsonDTCG';
-import { formatTailwindConfig, type TailwindExportOptions } from './formatters/tailwindConfig';
+import { formatTailwindConfig } from './formatters/tailwindConfig';
 import type { ColorFormat } from './transforms/colorTransform';
 import type { DimensionUnit } from './transforms/dimensionTransform';
 

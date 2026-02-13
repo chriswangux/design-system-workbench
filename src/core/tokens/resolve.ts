@@ -1,4 +1,4 @@
-import type { TokenTree, TokenGroup, Token, TokenValue, DesignToken } from './types';
+import type { TokenTree, TokenGroup, Token, TokenValue } from './types';
 import { isAlias } from './types';
 
 const ALIAS_PATTERN = /^\{(.+)\}$/;
@@ -23,7 +23,7 @@ export function getTokenByPath(tree: TokenTree, path: string[]): Token | undefin
     current = (current as Record<string, unknown>)[segment] as typeof current;
   }
   if (current && typeof current === 'object' && '$value' in current) {
-    return current as Token;
+    return current as unknown as Token;
   }
   return undefined;
 }

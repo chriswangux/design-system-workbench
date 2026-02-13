@@ -327,11 +327,6 @@ export default function TransitionChoreographyTool() {
     return JSON.stringify(variants, null, 2);
   }, [effectiveElements]);
 
-  // ---- Select classes ----
-
-  const selectClasses =
-    'w-full bg-surface-3 border border-border-subtle rounded px-2 py-1 text-xs text-text-primary outline-none focus:ring-1 focus:ring-accent/50';
-
   return (
     <ToolLayout
       title="Transition Choreography"

@@ -149,7 +149,7 @@ function VoiceCompassPlot({ axes }: { axes: VoiceAxis[] }) {
 
 export default function VoiceToneCompassTool() {
   const [axes, setAxes] = useState<VoiceAxis[]>(DEFAULT_AXES);
-  const [contexts, setContexts] = useState<ToneContext[]>(DEFAULT_CONTEXTS);
+  const [contexts] = useState<ToneContext[]>(DEFAULT_CONTEXTS);
   const [activeContext, setActiveContext] = useState<string | null>(null);
 
   const updateAxis = useCallback((id: string, value: number) => {

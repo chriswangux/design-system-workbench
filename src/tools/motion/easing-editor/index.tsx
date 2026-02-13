@@ -5,7 +5,6 @@ import { SliderWithInput, BezierCurveEditor } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';
 import type { MotionConfig, EasingCurveConfig, CubicBezierValue, SpringConfig, DesignToken, TokenGroup } from '@/core/tokens/types';
 import { DEFAULT_MOTION_CONFIG } from '@/core/tokens/defaults';
-import { BEZIER_PRESETS } from '@/core/engine/math/bezier';
 import { simulateSpring, springToBezier, springDuration, SPRING_PRESETS } from '@/core/engine/math/spring';
 import { generateDurationScale } from '@/core/engine/math/scales';
 import { nanoid } from 'nanoid';
@@ -47,7 +46,7 @@ function easingToTokenGroup(config: MotionConfig): TokenGroup {
   return { easing, duration };
 }
 
-function AnimationPreview({ bezier, springConfig, type }: { bezier: CubicBezierValue; springConfig?: SpringConfig; type: 'bezier' | 'spring' }) {
+function AnimationPreview({ bezier: _bezier, springConfig, type }: { bezier: CubicBezierValue; springConfig?: SpringConfig; type: 'bezier' | 'spring' }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number>(0);
@@ -93,9 +92,8 @@ function AnimationPreview({ bezier, springConfig, type }: { bezier: CubicBezierV
     const idx = Math.floor(progress * (springFrames.current.length - 1));
     easedProgress = springFrames.current[Math.min(idx, springFrames.current.length - 1)];
   } else {
-    // Simple CSS-like bezier approximation using the curve
-    const cssEasing = `cubic-bezier(${bezier.join(',')})`;
-    easedProgress = progress; // Fallback - real bezier applied via CSS
+    // Simple fallback - real bezier applied via CSS
+    easedProgress = progress;
   }
 
   return (
@@ -199,15 +197,6 @@ export default function EasingCurveEditorTool() {
       easingCurves: [...prev.easingCurves, newCurve],
     }));
     setActiveIdx(config.easingCurves.length);
-  };
-
-  const removeCurve = (idx: number) => {
-    if (config.easingCurves.length <= 1) return;
-    setConfig((prev) => ({
-      ...prev,
-      easingCurves: prev.easingCurves.filter((_, i) => i !== idx),
-    }));
-    setActiveIdx((prev) => Math.min(prev, config.easingCurves.length - 2));
   };
 
   if (!activeCurve) return null;

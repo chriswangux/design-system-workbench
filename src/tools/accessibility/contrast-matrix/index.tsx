@@ -200,7 +200,6 @@ export default function ContrastMatrixTool() {
   };
 
   const selectAllGroups = () => setSelectedGroups(new Set());
-  const selectNone = () => setSelectedGroups(new Set(['__none__']));
 
   // ---- Empty State ----
 

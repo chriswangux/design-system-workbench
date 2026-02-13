@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
 import { SliderWithInput } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';

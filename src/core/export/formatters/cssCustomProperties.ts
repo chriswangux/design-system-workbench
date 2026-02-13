@@ -1,4 +1,4 @@
-import type { TokenTree, Token, DesignToken, ShadowValue, ShadowLayer, DimensionValue, CubicBezierValue, DurationValue, TypographyValue, ColorValue } from '@/core/tokens/types';
+import type { TokenTree, Token, DesignToken, ShadowLayer, DimensionValue, CubicBezierValue, DurationValue, TypographyValue, ColorValue } from '@/core/tokens/types';
 import { isAlias } from '@/core/tokens/types';
 import { flattenTokenTree } from '@/core/tokens/resolve';
 import { transformColor, isColorValue, type ColorFormat } from '../transforms/colorTransform';

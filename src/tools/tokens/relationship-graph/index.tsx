@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
 import { SliderWithInput } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';

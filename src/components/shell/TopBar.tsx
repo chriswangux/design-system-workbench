@@ -58,7 +58,7 @@ export function TopBar() {
 
       <div className="flex items-center gap-1">
         <button
-          onClick={undo}
+          onClick={() => undo()}
           disabled={!canUndo}
           className="p-1.5 rounded-md hover:bg-surface-3 text-text-tertiary hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           title="Undo (Ctrl+Z)"
@@ -66,7 +66,7 @@ export function TopBar() {
           <Undo2 size={15} />
         </button>
         <button
-          onClick={redo}
+          onClick={() => redo()}
           disabled={!canRedo}
           className="p-1.5 rounded-md hover:bg-surface-3 text-text-tertiary hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           title="Redo (Ctrl+Shift+Z)"

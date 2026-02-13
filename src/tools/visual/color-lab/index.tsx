@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Plus, Trash2, Copy, Lock } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
-import { SliderWithInput, BezierCurveEditor, ColorSwatch, PaletteRow } from '@/components/controls';
+import { SliderWithInput, BezierCurveEditor } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';
 import type { ColorLabConfig, PaletteConfig, BezierControlPoints } from '@/core/tokens/types';
 import { DEFAULT_COLOR_LAB_CONFIG } from '@/core/tokens/defaults';

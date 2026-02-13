@@ -5,7 +5,7 @@ import { SliderWithInput } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';
 import { flattenTokenGroup } from '@/core/tokens/resolve';
 import { evaluateBezier } from '@/core/engine/math/bezier';
-import type { TokenGroup, BezierControlPoints, CubicBezierValue } from '@/core/tokens/types';
+import type { TokenGroup, BezierControlPoints } from '@/core/tokens/types';
 
 // ---- Types ----
 
@@ -150,7 +150,6 @@ function interpolateProperty(
   let value: number | null = null;
   for (const step of propSteps) {
     const start = step.delay;
-    const end = step.delay + step.duration;
     if (timeMs < start) continue;
     const t = Math.min(1, (timeMs - start) / Math.max(step.duration, 1));
     const bezier = EASING_PRESETS[step.easing];
@@ -336,7 +335,6 @@ function generateCSSKeyframes(steps: AnimStep[], totalDuration: number): string 
 function generateFramerMotion(steps: AnimStep[], totalDuration: number): string {
   if (steps.length === 0) return '// No steps defined';
 
-  const variants: Record<string, Record<string, unknown>> = {};
   const timePoints = new Set<number>([0]);
   for (const step of steps) {
     timePoints.add(step.delay + step.duration);

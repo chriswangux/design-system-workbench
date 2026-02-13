@@ -210,7 +210,7 @@ export default function DurationScaleTool() {
                 Recommended Usage
               </h3>
               <div className="space-y-2">
-                {durations.map((d, i) => {
+                {durations.map((_d, i) => {
                   const name = DURATION_NAMES[i] ?? `step-${i + 1}`;
                   const usages: Record<string, string> = {
                     instant: 'Micro-feedback: button press, checkbox toggle, ripple',
