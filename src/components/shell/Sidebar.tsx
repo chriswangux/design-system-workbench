@@ -92,6 +92,13 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="px-3 py-3 border-t border-border-subtle">
+        <p className="text-[9px] text-text-tertiary/50 leading-relaxed">
+          Designed by Chris Wang
+          <br />
+          Made by Claude Code
+        </p>
+      </div>
     </div>
   );
 }
