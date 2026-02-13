@@ -93,7 +93,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="px-3 py-3 border-t border-border-subtle">
-        <p className="text-[9px] text-text-tertiary/50 leading-relaxed">
+        <p className="text-[11px] text-text-secondary leading-relaxed">
           Designed by Chris Wang
           <br />
           Made by Claude Code
