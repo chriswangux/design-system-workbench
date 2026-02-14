@@ -1,4 +1,5 @@
-import { Undo2, Redo2, Download, FolderOpen, Save, Moon, Sun, Monitor } from 'lucide-react';
+import { useState } from 'react';
+import { Undo2, Redo2, Download, FolderOpen, Save, Moon, Sun, Monitor, RotateCcw } from 'lucide-react';
 import { useTokenStore } from '@/core/store/tokenStore';
 import { useUIStore } from '@/core/store/uiStore';
 import { useTemporalStore } from '@/core/hooks/useUndoRedo';
@@ -9,10 +10,12 @@ export function TopBar() {
   const setProjectName = useTokenStore((s) => s.setProjectName);
   const exportSnapshot = useTokenStore((s) => s.exportSnapshot);
   const importSnapshot = useTokenStore((s) => s.importSnapshot);
+  const resetProject = useTokenStore((s) => s.resetProject);
   const setExportPanelOpen = useUIStore((s) => s.setExportPanelOpen);
   const cycleTheme = useUIStore((s) => s.cycleTheme);
   const { undo, redo, canUndo, canRedo } = useTemporalStore();
   const { theme, resolved } = useTheme();
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const ThemeIcon = theme === 'system' ? Monitor : resolved === 'dark' ? Moon : Sun;
   const themeLabel = theme === 'system' ? 'System' : theme === 'dark' ? 'Dark' : 'Light';
@@ -40,6 +43,11 @@ export function TopBar() {
       importSnapshot(data);
     };
     input.click();
+  };
+
+  const handleReset = () => {
+    resetProject();
+    setShowResetConfirm(false);
   };
 
   return (
@@ -88,6 +96,48 @@ export function TopBar() {
         >
           <Save size={15} />
         </button>
+
+        {/* Reset button with confirmation */}
+        <div className="relative">
+          <button
+            onClick={() => setShowResetConfirm(!showResetConfirm)}
+            className="p-1.5 rounded-md hover:bg-surface-3 text-text-tertiary hover:text-text-primary transition-colors"
+            title="Reset project to clean slate"
+          >
+            <RotateCcw size={15} />
+          </button>
+          {showResetConfirm && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowResetConfirm(false)}
+              />
+              {/* Dropdown */}
+              <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-lg border border-border bg-surface-1 shadow-lg p-3">
+                <p className="text-xs font-medium text-text-primary mb-1">Reset to clean slate?</p>
+                <p className="text-[10px] text-text-tertiary mb-3 leading-relaxed">
+                  This clears all tokens and resets generator configs to defaults. Demo sites will revert to fallback colors. This action can be undone with Ctrl+Z.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleReset}
+                    className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium bg-error/10 text-error hover:bg-error/20 border border-error/30 transition-colors"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => setShowResetConfirm(false)}
+                    className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium bg-surface-2 text-text-secondary hover:bg-surface-3 border border-border-subtle transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         <div className="w-px h-4 bg-border-subtle mx-1" />
         <button
           onClick={cycleTheme}

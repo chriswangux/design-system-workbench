@@ -125,6 +125,54 @@ export function evaluateSpringAt(config: SpringConfig, timeMs: number): number {
   return target?.position ?? 1;
 }
 
+/**
+ * Convert a spring simulation to a CSS `linear()` easing function string.
+ * Unlike cubic-bezier(), linear() can represent full spring oscillation
+ * by encoding the simulation as a series of sample points.
+ *
+ * Output: "linear(0, 0.05 4%, 0.18 8%, 0.42 12%, 0.77 16%, 1.15 20%, ...)"
+ */
+export function springToLinear(config: SpringConfig, samples = 80): string {
+  const keyframes = simulateSpring(config, 1);
+  const duration = keyframes[keyframes.length - 1].time;
+
+  if (duration === 0 || keyframes.length < 2) return 'linear(0, 1)';
+
+  // Sample the spring at evenly spaced time points
+  const points: string[] = [];
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const timeMs = t * duration;
+
+    // Find the position at this time via interpolation
+    let position = 1;
+    for (let j = 1; j < keyframes.length; j++) {
+      if (keyframes[j].time >= timeMs) {
+        const prev = keyframes[j - 1];
+        const next = keyframes[j];
+        const ratio = (timeMs - prev.time) / (next.time - prev.time);
+        position = prev.position + (next.position - prev.position) * ratio;
+        break;
+      }
+    }
+
+    // Round to 4 decimal places for compact output
+    const rounded = Math.round(position * 10000) / 10000;
+
+    if (i === 0) {
+      points.push(String(rounded));
+    } else if (i === samples) {
+      points.push(String(rounded));
+    } else {
+      // Include percentage for each point
+      const pct = Math.round(t * 10000) / 100;
+      points.push(`${rounded} ${pct}%`);
+    }
+  }
+
+  return `linear(${points.join(', ')})`;
+}
+
 // Common spring presets
 export const SPRING_PRESETS: Record<string, SpringConfig> = {
   gentle: { stiffness: 120, damping: 14, mass: 1 },

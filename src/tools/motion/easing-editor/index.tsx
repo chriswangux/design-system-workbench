@@ -5,18 +5,21 @@ import { SliderWithInput, BezierCurveEditor } from '@/components/controls';
 import { useTokenStore } from '@/core/store/tokenStore';
 import type { MotionConfig, EasingCurveConfig, CubicBezierValue, SpringConfig, DesignToken, TokenGroup } from '@/core/tokens/types';
 import { DEFAULT_MOTION_CONFIG } from '@/core/tokens/defaults';
-import { simulateSpring, springToBezier, springDuration, SPRING_PRESETS } from '@/core/engine/math/spring';
+import { simulateSpring, springToBezier, springToLinear, springDuration, SPRING_PRESETS } from '@/core/engine/math/spring';
+import { broadcastReplay } from '@/preview/bridge/TokenBroadcast';
 import { generateDurationScale } from '@/core/engine/math/scales';
 import { nanoid } from 'nanoid';
 
 function easingToTokenGroup(config: MotionConfig): TokenGroup {
   const easing: TokenGroup = { $type: 'cubicBezier' };
   for (const curve of config.easingCurves) {
-    const bezierValue: CubicBezierValue = curve.type === 'bezier'
+    // Bezier curves: store as [x1, y1, x2, y2] array → exported as cubic-bezier()
+    // Spring curves: store as linear() CSS string → exported directly (true spring physics)
+    const value: CubicBezierValue | string = curve.type === 'bezier'
       ? curve.bezier ?? [0, 0, 1, 1]
-      : springToBezier(curve.spring ?? { stiffness: 200, damping: 20, mass: 1 });
+      : springToLinear(curve.spring ?? { stiffness: 200, damping: 20, mass: 1 });
     const token: DesignToken = {
-      $value: bezierValue,
+      $value: value,
       $type: 'cubicBezier',
       $extensions: {
         'com.dsw.generator': { toolId: 'motion', generatedAt: new Date().toISOString(), configHash: '' },
@@ -66,6 +69,7 @@ function AnimationPreview({ bezier: _bezier, springConfig, type }: { bezier: Cub
 
   const play = () => {
     setPlaying(true);
+    broadcastReplay(); // Replay animations in all open demo tabs
     startRef.current = performance.now();
     const animate = (now: number) => {
       const elapsed = now - startRef.current;
@@ -183,6 +187,10 @@ export default function EasingCurveEditorTool() {
         i === activeIdx ? { ...c, ...updates } : c,
       ),
     }));
+    // When curve type changes, replay demos so the difference is immediately visible
+    if (updates.type) {
+      setTimeout(() => broadcastReplay(), 200);
+    }
   };
 
   const addCurve = () => {

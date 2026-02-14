@@ -20,6 +20,7 @@ declare module 'culori' {
     alpha?: number;
   }
 
+  export function parse(color: string): Color | undefined;
   export function oklch(color: Color | { mode: string; r: number; g: number; b: number }): Oklch | undefined;
   export function rgb(color: Color): Rgb | undefined;
   export function formatHex(color: Color): string | undefined;

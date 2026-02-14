@@ -9,15 +9,15 @@ export const DEFAULT_COLOR_LAB_CONFIG: ColorLabConfig = {
       id: 'blue',
       name: 'blue',
       steps: 11,
-      hue: { start: 240, end: 240, curve: LINEAR },
-      chroma: { start: 0.01, end: 0.01, curve: [0.25, 0.8, 0.75, 0.2] },
-      lightness: { start: 0.97, end: 0.15, curve: EASE_OUT },
+      hue: { start: 255, end: 255, curve: LINEAR },
+      chroma: { start: 0.04, end: 0.10, curve: [0.3, 0.9, 0.7, 0.1] }, // Peaks in mid-tones
+      lightness: { start: 0.97, end: 0.20, curve: EASE_OUT },
     },
     {
       id: 'neutral',
       name: 'neutral',
       steps: 11,
-      hue: { start: 240, end: 240, curve: LINEAR },
+      hue: { start: 250, end: 250, curve: LINEAR },
       chroma: { start: 0.005, end: 0.005, curve: LINEAR },
       lightness: { start: 0.98, end: 0.10, curve: LINEAR },
     },
@@ -42,8 +42,7 @@ export const DEFAULT_TYPOGRAPHY_LAB_CONFIG: TypographyLabConfig = {
 
 export const DEFAULT_SPACING_LAB_CONFIG: SpacingLabConfig = {
   baseUnit: 4,
-  progression: 'geometric',
-  ratio: 2,
+  progression: 'arithmetic',
   steps: 10,
 };
 

@@ -36,6 +36,12 @@ import {
   BarChart3,
   PieChart,
   LineChart,
+  Play,
+  AppWindow,
+  LayoutDashboard,
+  BookOpen,
+  Upload,
+  ScanLine,
 } from 'lucide-react';
 
 // Lazy-loaded tool components
@@ -66,6 +72,22 @@ const ResponsiveSpacing = lazy(() => import('@/tools/layout/responsive-spacing')
 const ChartPalette = lazy(() => import('@/tools/data-viz/chart-palette'));
 const DataInk = lazy(() => import('@/tools/data-viz/data-ink'));
 
+// Preview tool wrapper components (stable references to avoid remounts)
+const PreviewToolModule = lazy(() => import('@/preview/PreviewTool'));
+
+function SaaSPreview() {
+  return <PreviewToolModule demoPath="saas-landing" title="SaaS Landing" description="Marketing landing page consuming your design tokens live" />;
+}
+function DashboardPreview() {
+  return <PreviewToolModule demoPath="dashboard" title="Dashboard" description="Admin dashboard with dense UI consuming your design tokens" />;
+}
+function BlogPreview() {
+  return <PreviewToolModule demoPath="blog" title="Blog / Content" description="Content site with reading typography consuming your design tokens" />;
+}
+
+// Reverse map tool
+const ReverseMap = lazy(() => import('@/tools/import/reverse-map'));
+
 export interface ToolRoute {
   path: string;
   label: string;
@@ -78,6 +100,8 @@ export interface ToolSection {
   section: string;
   icon: LucideIcon;
   tools: ToolRoute[];
+  /** 'utility' sections are separated by a divider at the bottom of the sidebar */
+  group?: 'design' | 'utility';
 }
 
 export const toolSections: ToolSection[] = [
@@ -159,6 +183,24 @@ export const toolSections: ToolSection[] = [
     tools: [
       { path: '/data-viz/chart-palette', label: 'Chart Palette', icon: PieChart, component: ChartPalette, description: 'Accessible data visualization colors' },
       { path: '/data-viz/data-ink', label: 'Data-Ink', icon: LineChart, component: DataInk, description: 'Chart styling optimization' },
+    ],
+  },
+  {
+    section: 'Import',
+    icon: Upload,
+    group: 'utility',
+    tools: [
+      { path: '/import/reverse-map', label: 'Reverse Map', icon: ScanLine, component: ReverseMap, description: 'Extract design tokens from any website' },
+    ],
+  },
+  {
+    section: 'Live Preview',
+    icon: Play,
+    group: 'utility',
+    tools: [
+      { path: '/preview/saas-landing', label: 'SaaS Landing', icon: AppWindow, component: SaaSPreview, description: 'Marketing landing page with your design tokens' },
+      { path: '/preview/dashboard', label: 'Dashboard', icon: LayoutDashboard, component: DashboardPreview, description: 'Admin dashboard with your design tokens' },
+      { path: '/preview/blog', label: 'Blog / Content', icon: BookOpen, component: BlogPreview, description: 'Content site with your design tokens' },
     ],
   },
 ];

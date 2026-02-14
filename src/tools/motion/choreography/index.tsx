@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { ToolLayout, SplitPanel, ParameterSection } from '@/components/shell';
 import { SliderWithInput } from '@/components/controls';
 import { BEZIER_PRESETS } from '@/core/engine/math/bezier';
+import { broadcastReplay } from '@/preview/bridge/TokenBroadcast';
 
 // ---- Types ----
 
@@ -180,6 +181,7 @@ export default function TransitionChoreographyTool() {
 
   const play = useCallback(() => {
     setPlaying(true);
+    broadcastReplay(); // Replay animations in all open demo tabs
     setElapsed(0);
     startRef.current = performance.now();
     const animate = (now: number) => {

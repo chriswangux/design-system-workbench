@@ -13,6 +13,10 @@ export function Sidebar() {
     toggleSection,
   } = useUIStore();
 
+  // Split sections into design tools and utility tools
+  const designSections = toolSections.filter((s) => s.group !== 'utility');
+  const utilitySections = toolSections.filter((s) => s.group === 'utility');
+
   if (sidebarCollapsed) {
     return (
       <div className="w-12 bg-surface-1 border-r border-border-subtle flex flex-col items-center py-3 shrink-0">
@@ -39,6 +43,46 @@ export function Sidebar() {
     );
   }
 
+  const renderSection = ({ section, icon: SectionIcon, tools }: (typeof toolSections)[number]) => {
+    const isExpanded = expandedSections.includes(section);
+    return (
+      <div key={section}>
+        <button
+          onClick={() => toggleSection(section)}
+          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+        >
+          <ChevronRight
+            size={12}
+            className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+          />
+          <SectionIcon size={14} />
+          <span>{section}</span>
+        </button>
+        {isExpanded && (
+          <div className="ml-5 pl-2 border-l border-border-subtle/50">
+            {tools.map(({ path, label, icon: ToolIcon }) => {
+              const isActive = location.pathname === path;
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded-md transition-colors ${
+                    isActive
+                      ? 'bg-accent/10 text-accent font-medium'
+                      : 'text-text-tertiary hover:text-text-primary hover:bg-surface-2'
+                  }`}
+                >
+                  <ToolIcon size={13} />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-56 bg-surface-1 border-r border-border-subtle flex flex-col shrink-0 overflow-hidden">
       <div className="flex items-center justify-between px-3 py-3 border-b border-border-subtle">
@@ -52,45 +96,16 @@ export function Sidebar() {
         </button>
       </div>
       <nav className="flex-1 overflow-y-auto py-1">
-        {toolSections.map(({ section, icon: SectionIcon, tools }) => {
-          const isExpanded = expandedSections.includes(section);
-          return (
-            <div key={section}>
-              <button
-                onClick={() => toggleSection(section)}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
-              >
-                <ChevronRight
-                  size={12}
-                  className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                />
-                <SectionIcon size={14} />
-                <span>{section}</span>
-              </button>
-              {isExpanded && (
-                <div className="ml-3">
-                  {tools.map(({ path, label, icon: ToolIcon }) => {
-                    const isActive = location.pathname === path;
-                    return (
-                      <button
-                        key={path}
-                        onClick={() => navigate(path)}
-                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded-l-md transition-colors ${
-                          isActive
-                            ? 'bg-accent/10 text-accent border-r-2 border-accent'
-                            : 'text-text-tertiary hover:text-text-primary hover:bg-surface-2'
-                        }`}
-                      >
-                        <ToolIcon size={13} />
-                        <span>{label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {/* Design parameter sections */}
+        {designSections.map(renderSection)}
+
+        {/* Divider between design tools and utility tools */}
+        {utilitySections.length > 0 && (
+          <div className="mx-3 my-2 border-t border-border-subtle" />
+        )}
+
+        {/* Utility sections (Import, Live Preview) */}
+        {utilitySections.map(renderSection)}
       </nav>
       <div className="px-3 py-3 border-t border-border-subtle">
         <p className="text-[11px] text-text-secondary leading-relaxed">
