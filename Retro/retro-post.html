@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building a Design System Workbench in 3 Hours</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #fafaf9;
+    --bg-alt: #f5f5f4;
+    --bg-code: #1c1917;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --text-tertiary: #a8a29e;
+    --accent: #6366f1;
+    --accent-light: #eef2ff;
+    --border: #e7e5e4;
+    --success: #16a34a;
+    --warning: #d97706;
+    --error: #dc2626;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0a09;
+      --bg-alt: #1c1917;
+      --bg-code: #0c0a09;
+      --text: #fafaf9;
+      --text-secondary: #a8a29e;
+      --text-tertiary: #78716c;
+      --accent: #818cf8;
+      --accent-light: #1e1b4b;
+      --border: #292524;
+    }
+  }
+
+  html { font-size: 18px; scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 120px 0 80px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .hero .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 540px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-family: var(--mono);
+  }
+
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* Sections */
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  h2 + .section-sub {
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+    margin-bottom: 32px;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+
+  p { margin-bottom: 16px; color: var(--text-secondary); }
+  p strong { color: var(--text); font-weight: 600; }
+
+  /* Pull quotes */
+  .pull-quote {
+    margin: 40px -40px;
+    padding: 24px 40px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-light);
+    border-radius: 0 8px 8px 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .pull-quote cite {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    font-style: normal;
+    font-family: var(--mono);
+    color: var(--text-tertiary);
+  }
+
+  /* Code */
+  code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  pre {
+    background: var(--bg-code);
+    color: #e7e5e4;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    line-height: 1.7;
+    margin: 20px 0;
+  }
+
+  pre .comment { color: #78716c; }
+  pre .keyword { color: #c084fc; }
+  pre .string { color: #86efac; }
+  pre .number { color: #fbbf24; }
+  pre .type { color: #67e8f9; }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .stat-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); }
+
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* Timeline */
+  .timeline { position: relative; margin: 32px 0; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-left: 48px;
+    padding-bottom: 32px;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-dot {
+    position: absolute;
+    left: 9px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+
+  .timeline-dot.filled { background: var(--accent); }
+
+  .timeline-time {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+
+  .timeline-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .timeline-detail {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  /* Tool grid */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .tool-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: border-color 0.2s ease;
+  }
+
+  .tool-card:hover { border-color: var(--accent); }
+
+  .tool-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .tool-area {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tool-desc {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  /* Prompt log */
+  .prompt-log { margin: 24px 0; }
+
+  .prompt-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .prompt-item:last-child { border-bottom: none; }
+
+  .prompt-number {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    width: 24px;
+    text-align: right;
+  }
+
+  .prompt-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Lessons */
+  .lesson {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+
+  .lesson-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .lesson-body {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Footer */
+  footer {
+    padding: 48px 0;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .tool-grid { grid-template-columns: 1fr; }
+    .pull-quote { margin: 32px 0; padding: 20px; }
+    .hero-meta { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-label">Project Retrospective</div>
+    <h1>Building a 26-Tool Design System Workbench in 3 Hours</h1>
+    <p class="subtitle">How a procedural approach, agent teams, and a Design QA role turned a blank directory into a full design infrastructure toolkit.</p>
+    <div class="hero-meta">
+      <span>Feb 13, 2026</span>
+      <span>15,936 lines of code</span>
+      <span>3h 15m wall-clock</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2>Overview</h2>
+    <p class="section-sub">The machine that designs the design.</p>
+
+    <p>Most design systems are built as static specs — a Figma file, a handful of Notion pages, a token JSON someone hand-wrote. The Design System Workbench takes a different approach: <strong>every design decision is generated procedurally from tunable parameters</strong>.</p>
+
+    <p>The idea comes from tools like Lyft's <strong>Colorbox.io</strong>, which generates color palettes from bezier curves rather than manually picking hex values. We applied that philosophy to everything — typography, spacing, shadows, easing curves, grid systems, even voice and tone.</p>
+
+    <p>The result: a React + TypeScript web app with 26 interactive tools across 9 design areas, all feeding into a shared token store that exports to CSS custom properties, JSON (W3C DTCG format), and Tailwind config.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">26</div>
+        <div class="stat-label">Tools Built</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">9</div>
+        <div class="stat-label">Design Areas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">15.9K</div>
+        <div class="stat-label">Lines of Code</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">Build Waves</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">1.3s</div>
+        <div class="stat-label">Build Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">273KB</div>
+        <div class="stat-label">Bundle (gzip)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The Journey</h2>
+    <p class="section-sub">From blank directory to deployed workbench.</p>
+
+    <div class="pull-quote">
+      "I don't just want to tell you what to do or write a spec, I want to design the machine that designs the Design."
+      <cite>— The opening prompt</cite>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot filled"></div>
+        <div class="timeline-time">Phase 0 — Foundation</div>
+        <div class="timeline-title">Architecture & Core Infrastructure</div>
+        <div class="timeline-detail">Token data model (W3C DTCG), Zustand store with undo/redo, OKLCH color engine, bezier solver, spring physics, UI shell with sidebar navigation. Everything the 26 tools would plug into.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot filled"></div>
+        <div class="timeline-time">Phase 0 — First Tools</div>
+        <div class="timeline-title">Color Lab, Typography Lab, Spacing Lab, Shadow Lab, Easing Curves</div>
+        <div class="timeline-detail">The five foundational generators. Color Lab alone has 3 bezier curve editors controlling hue, chroma, and lightness independently in OKLCH space — the Colorbox.io approach applied to the entire color pipeline.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot filled"></div>
+        <div class="timeline-time">Phase 1 — Solo Build</div>
+        <div class="timeline-title">5 more tools: Duration Scale, Grid System, Contrast Matrix, CVD Simulator, Voice & Tone</div>
+        <div class="timeline-detail">The accessibility tools (Contrast Matrix, CVD Simulator) were the first to <em>consume</em> tokens from another tool — they read Color Lab's output in real-time. Change a palette and the N×N contrast grid updates instantly.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">Phase 2 — Team Formation</div>
+        <div class="timeline-title">3 Builders + 1 Design QA agent</div>
+        <div class="timeline-detail">For the remaining 16 tools, an agent team was created. Three builders worked in parallel across 4 waves, with a Design QA agent reviewing every tool against a 10-point checklist after each wave.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">Wave 1 — Tier 1</div>
+        <div class="timeline-title">Iconography, Touch Targets, Focus Order, Microcopy, Breakpoints</div>
+        <div class="timeline-detail">Simple, independent tools with no token dependencies. QA found the first systemic issue: hardcoded Tailwind colors instead of CSS variables.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">Wave 2 — Tier 2</div>
+        <div class="timeline-title">Chart Palette, Data-Ink, Responsive Spacing, State Machine</div>
+        <div class="timeline-detail">Token consumers and the first visual editor (State Machine with draggable SVG nodes). Responsive Spacing was flagged by QA as the cleanest tool — defensive circular-read prevention, proper copy feedback.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">Wave 3 — Tier 3</div>
+        <div class="timeline-title">Theme Derivation, Feedback Patterns, Choreography</div>
+        <div class="timeline-detail">The most algorithmically complex wave. Theme Derivation inverts OKLCH lightness curves via a bezier editor to generate dark mode. Feedback Patterns sequences animations frame-by-frame using requestAnimationFrame.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">Wave 4 — Tier 4</div>
+        <div class="timeline-title">Token Taxonomy, Relationship Graph, Export Pipeline, Theme Comparison</div>
+        <div class="timeline-detail">The meta-tools. Taxonomy Builder creates semantic aliases. Relationship Graph renders a force-directed visualization of token references. Export Pipeline connects the whole system to CSS, JSON, and Tailwind output. All 26 tools complete.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot filled"></div>
+        <div class="timeline-time">Deployment</div>
+        <div class="timeline-title">GitHub + GitHub Pages + Portable Zip</div>
+        <div class="timeline-detail">First deploy failed — CI's <code>tsc -b</code> was stricter than local <code>tsc --noEmit</code>. 30+ errors to fix. Then BrowserRouter broke on zip hosting. Switched to HashRouter for universal compatibility.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Key Decisions</h2>
+    <p class="section-sub">The architectural bets and how they paid off.</p>
+
+    <h3>OKLCH as the Internal Color Space</h3>
+    <p>Every color in the system is stored as OKLCH — lightness, chroma, hue. Not hex, not HSL. This matters because OKLCH is <strong>perceptually uniform</strong>: a 10-unit change in lightness looks the same regardless of hue. The Color Lab's bezier curves operate on these three channels independently, and the result actually looks evenly spaced. HSL would have produced uneven palettes that "feel wrong" without manual tweaking.</p>
+
+    <h3>Zustand + Immer + Zundo</h3>
+    <p>The token store is the nervous system of the workbench. Every tool reads from and writes to it. Zustand was chosen over Redux for simplicity — no boilerplate, no action creators, just a store with methods. Immer makes nested token tree updates ergonomic. Zundo adds undo/redo with one line. The store persists to localStorage, so your work survives page refreshes.</p>
+
+    <h3>W3C DTCG Token Format</h3>
+    <p>The internal data model follows the <a href="https://www.designtokens.org/tr/drafts/format/" style="color: var(--accent)">W3C Design Tokens Community Group specification</a>. Every token has <code>$value</code>, <code>$type</code>, and <code>$extensions</code>. Aliases use <code>{color.blue.500}</code> syntax. This means the export pipeline is nearly trivial — the internal format <em>is</em> the standard format.</p>
+
+    <h3>HashRouter Over BrowserRouter</h3>
+    <p>BrowserRouter requires server-side redirects to handle client-side routes. It broke on GitHub Pages (needed a 404.html hack) and broke completely on the zip hosting platform (which serves under an unpredictable subpath). HashRouter uses URL fragments (<code>/#/visual/color-lab</code>) that work everywhere without server configuration. Uglier URLs, universal compatibility.</p>
+
+    <pre><span class="comment">// The one-line change that fixed deployment everywhere</span>
+<span class="keyword">export default function</span> <span class="type">App</span>() {
+  <span class="keyword">return</span> (
+    &lt;<span class="type">HashRouter</span>&gt;
+      &lt;<span class="type">AppShell</span> /&gt;
+    &lt;/<span class="type">HashRouter</span>&gt;
+  );
+}</pre>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The 26 Tools</h2>
+    <p class="section-sub">Every tool in the workbench.</p>
+
+    <div class="tool-grid">
+      <div class="tool-card"><div class="tool-area">Visual</div><div class="tool-name">Color Lab</div><div class="tool-desc">Bezier curve palette generation in OKLCH</div></div>
+      <div class="tool-card"><div class="tool-area">Visual</div><div class="tool-name">Typography Lab</div><div class="tool-desc">Mathematical type scale with ratio presets</div></div>
+      <div class="tool-card"><div class="tool-area">Visual</div><div class="tool-name">Spacing Lab</div><div class="tool-desc">Geometric/fibonacci/custom progressions</div></div>
+      <div class="tool-card"><div class="tool-area">Visual</div><div class="tool-name">Shadow Lab</div><div class="tool-desc">3D light source, dual-shadow elevation</div></div>
+      <div class="tool-card"><div class="tool-area">Visual</div><div class="tool-name">Iconography</div><div class="tool-desc">Icon grid, stroke weight, corner radius</div></div>
+      <div class="tool-card"><div class="tool-area">Interaction</div><div class="tool-name">State Machine</div><div class="tool-desc">Visual state diagram editor with drag</div></div>
+      <div class="tool-card"><div class="tool-area">Interaction</div><div class="tool-name">Feedback Patterns</div><div class="tool-desc">Multi-step animation sequence editor</div></div>
+      <div class="tool-card"><div class="tool-area">Motion</div><div class="tool-name">Easing Curves</div><div class="tool-desc">Bezier + spring physics with live preview</div></div>
+      <div class="tool-card"><div class="tool-area">Motion</div><div class="tool-name">Duration Scale</div><div class="tool-desc">Ratio-based timing with hover demos</div></div>
+      <div class="tool-card"><div class="tool-area">Motion</div><div class="tool-name">Choreography</div><div class="tool-desc">Multi-element stagger sequencer</div></div>
+      <div class="tool-card"><div class="tool-area">Content</div><div class="tool-name">Voice & Tone</div><div class="tool-desc">6-axis radar compass with context shifting</div></div>
+      <div class="tool-card"><div class="tool-area">Content</div><div class="tool-name">Microcopy Workshop</div><div class="tool-desc">128 copy variants across 8 contexts</div></div>
+      <div class="tool-card"><div class="tool-area">A11y</div><div class="tool-name">Contrast Matrix</div><div class="tool-desc">N&times;N WCAG/APCA grid with filtering</div></div>
+      <div class="tool-card"><div class="tool-area">A11y</div><div class="tool-name">CVD Simulator</div><div class="tool-desc">4 color blindness types, compare-all</div></div>
+      <div class="tool-card"><div class="tool-area">A11y</div><div class="tool-name">Focus Order</div><div class="tool-desc">Tab-through visualization with WCAG rules</div></div>
+      <div class="tool-card"><div class="tool-area">A11y</div><div class="tool-name">Touch Targets</div><div class="tool-desc">Platform min-size verification</div></div>
+      <div class="tool-card"><div class="tool-area">Tokens</div><div class="tool-name">Taxonomy Builder</div><div class="tool-desc">Visual tree editor for naming hierarchy</div></div>
+      <div class="tool-card"><div class="tool-area">Tokens</div><div class="tool-name">Relationship Graph</div><div class="tool-desc">Force-directed token reference map</div></div>
+      <div class="tool-card"><div class="tool-area">Tokens</div><div class="tool-name">Export Pipeline</div><div class="tool-desc">CSS, JSON DTCG, Tailwind output</div></div>
+      <div class="tool-card"><div class="tool-area">Theming</div><div class="tool-name">Theme Derivation</div><div class="tool-desc">Algorithmic dark mode via lightness curves</div></div>
+      <div class="tool-card"><div class="tool-area">Theming</div><div class="tool-name">Theme Compare</div><div class="tool-desc">Side-by-side on reference UI components</div></div>
+      <div class="tool-card"><div class="tool-area">Layout</div><div class="tool-name">Grid System</div><div class="tool-desc">Multi-breakpoint column grid builder</div></div>
+      <div class="tool-card"><div class="tool-area">Layout</div><div class="tool-name">Breakpoints</div><div class="tool-desc">Visual timeline with responsive preview</div></div>
+      <div class="tool-card"><div class="tool-area">Layout</div><div class="tool-name">Responsive Spacing</div><div class="tool-desc">Fluid/stepped scaling with clamp()</div></div>
+      <div class="tool-card"><div class="tool-area">Data Viz</div><div class="tool-name">Chart Palette</div><div class="tool-desc">Sequential/diverging/categorical, CVD-safe</div></div>
+      <div class="tool-card"><div class="tool-area">Data Viz</div><div class="tool-name">Data-Ink</div><div class="tool-desc">Tufte's ratio with live chart toggle</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Prompt Log</h2>
+    <p class="section-sub">The 12 human prompts that shaped the project.</p>
+
+    <div class="prompt-log">
+      <div class="prompt-item"><span class="prompt-number">1</span><span class="prompt-text">"I want to design a Design System with you, taking a procedural approach. I don't just want to tell you what to do or write a spec, I want to design the machine that designs the Design."</span></div>
+      <div class="prompt-item"><span class="prompt-number">2</span><span class="prompt-text">Chose React + TypeScript, Workbench + Export, all areas, work on all with agents.</span></div>
+      <div class="prompt-item"><span class="prompt-number">3</span><span class="prompt-text">"The tool itself should support light and dark theme."</span></div>
+      <div class="prompt-item"><span class="prompt-number">4</span><span class="prompt-text">"Start planning for the rest of the tools. Use subagents and agent teams, make sure there are roles for Design QA to catch edge cases and issues."</span></div>
+      <div class="prompt-item"><span class="prompt-number">5</span><span class="prompt-text">"Save to GitHub. And document progress. Use subagents."</span></div>
+      <div class="prompt-item"><span class="prompt-number">6</span><span class="prompt-text">"Also zip the project so I can host on a tool that supports zipped sites."</span></div>
+      <div class="prompt-item"><span class="prompt-number">7</span><span class="prompt-text">"Add a subtle credit thing to the site that says Designed by Chris Wang, Made by Claude Code."</span></div>
+      <div class="prompt-item"><span class="prompt-number">8</span><span class="prompt-text">"Make it 11px, and then still darker."</span></div>
+      <div class="prompt-item"><span class="prompt-number">9</span><span class="prompt-text">"Make a better favicon, white background, dark foreground."</span></div>
+      <div class="prompt-item"><span class="prompt-number">10</span><span class="prompt-text">"Is the site live somewhere too?"</span></div>
+      <div class="prompt-item"><span class="prompt-number">11</span><span class="prompt-text">[Paste of console errors from zip hosting] — led to HashRouter switch.</span></div>
+      <div class="prompt-item"><span class="prompt-number">12</span><span class="prompt-text">"Document progress and run project retro."</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>By The Numbers</h2>
+    <p class="section-sub">The final tally.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">64</div>
+        <div class="stat-label">Source Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">12,795</div>
+        <div class="stat-label">Lines in Tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">2,042</div>
+        <div class="stat-label">Lines in Engines</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Git Commits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">40+</div>
+        <div class="stat-label">QA Issues Found</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">60+</div>
+        <div class="stat-label">Color Fixes</div>
+      </div>
+    </div>
+
+    <p>The largest tool by line count: <strong>State Machine Designer</strong> at 757 lines (draggable SVG nodes, bezier edge routing, 5 presets). The smallest: <strong>Shadow Lab</strong> at 221 lines (most logic in a separate generator file).</p>
+
+    <p>The tool QA praised most: <strong>Responsive Spacing</strong> — defensive circular-read prevention, proper copy feedback, dual empty states for missing spacing vs missing breakpoints.</p>
+
+    <p>The tool that broke first: <strong>Duration Scale</strong> — infinite render loop from reading and writing the same store value in a <code>useEffect</code>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Reflections</h2>
+    <p class="section-sub">What worked, what broke, what we'd change.</p>
+
+    <div class="pull-quote">
+      The hardcoded color problem was the #1 recurring issue across all 4 waves. Every QA review found it. The fix was always the same. We should have made it impossible, not just inadvisable.
+    </div>
+
+    <h3>What Worked</h3>
+
+    <div class="lesson">
+      <div class="lesson-title">Wave-based parallelism with dependency ordering</div>
+      <p class="lesson-body">Independent tools first, consumers second, meta-tools last. Three builders never blocked on each other within a wave. The dependency graph was the execution plan.</p>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">The Design QA role</div>
+      <p class="lesson-body">Not just catching bugs — establishing patterns. The QA agent's checklist matured across waves, and its reviews created a feedback loop that improved each subsequent wave's output.</p>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">The shared token store as integration bus</div>
+      <p class="lesson-body">Color Lab writes → Contrast Matrix reads → Theme Derivation transforms → Export Pipeline formats. No tool-to-tool coupling. Just the store. Every tool is both independent and interconnected.</p>
+    </div>
+
+    <h3>What We'd Do Differently</h3>
+
+    <div class="lesson">
+      <div class="lesson-title">Ban hardcoded colors in builder instructions</div>
+      <p class="lesson-body">Not "use CSS variables" — an explicit banned list: <code>NEVER use text-red-*, bg-white, text-white, or hex values</code>. Make the constraint impossible to miss.</p>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">Create shared components earlier</div>
+      <p class="lesson-body">A <code>&lt;CopyButton&gt;</code> component with clipboard + checkmark feedback should have been in Phase 0 shared controls. Instead, every builder reinvented it (or forgot it).</p>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">Match CI strictness locally</div>
+      <p class="lesson-body"><code>tsc --noEmit</code> passes locally. <code>tsc -b</code> fails in CI. The gap caused 30+ errors on first deploy. Always run what CI runs.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Designed by Chris Wang. Made by Claude Code.</p>
+    <p style="margin-top: 8px;">
+      <a href="https://github.com/chriswangux/design-system-workbench">GitHub</a> &middot;
+      <a href="https://chriswangux.github.io/design-system-workbench/">Live Demo</a>
+    </p>
+    <p style="margin-top: 16px; font-size: 0.65rem;">February 13, 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>

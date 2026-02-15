@@ -7,13 +7,16 @@ import { useUndoRedoKeyboard } from '@/core/hooks/useUndoRedo';
 import { useTokenStore } from '@/core/store/tokenStore';
 import { generateFullCSS } from '@/preview/bridge/useTokenCSS';
 import { broadcastTokenCSS } from '@/preview/bridge/TokenBroadcast';
-import type { MotionConfig, SpacingLabConfig, ShadowLabConfig, CubicBezierValue, DesignToken, DimensionValue, TokenGroup } from '@/core/tokens/types';
-import { DEFAULT_MOTION_CONFIG, DEFAULT_SPACING_LAB_CONFIG, DEFAULT_SHADOW_LAB_CONFIG } from '@/core/tokens/defaults';
+import type { MotionConfig, SpacingLabConfig, ShadowLabConfig, ColorLabConfig, TypographyLabConfig, CubicBezierValue, DesignToken, DimensionValue, TokenGroup } from '@/core/tokens/types';
+import { DEFAULT_MOTION_CONFIG, DEFAULT_SPACING_LAB_CONFIG, DEFAULT_SHADOW_LAB_CONFIG, DEFAULT_COLOR_LAB_CONFIG, DEFAULT_TYPOGRAPHY_LAB_CONFIG } from '@/core/tokens/defaults';
 import { springToLinear } from '@/core/engine/math/spring';
 import { generateDurationScale, generateSpacingScale } from '@/core/engine/math/scales';
 import { generateShadows, shadowsToTokenGroup } from '@/tools/visual/shadow-lab/shadowGenerator';
+import { generatePalette, paletteToTokenGroup } from '@/tools/visual/color-lab/colorGenerator';
+import { generateTypographyTokens } from '@/core/engine/typography/ratios';
 
 const DemoShell = lazy(() => import('@/preview/demos/DemoShell'));
+const StyleSiteShell = lazy(() => import('@/tools/library/styles/StyleSiteShell'));
 
 /**
  * Generate motion tokens from a MotionConfig.
@@ -73,6 +76,71 @@ function useEnsureMotionTokens() {
       setTokenGroup(['motion'], tokens);
     }
   }, [motionTokens, setTokenGroup, getGeneratorConfig]);
+}
+
+/**
+ * Ensures color tokens exist in the store.
+ */
+function useEnsureColorTokens() {
+  const colorTokens = useTokenStore((s) => s.tokens.color);
+  const setTokenGroup = useTokenStore((s) => s.setTokenGroup);
+  const getGeneratorConfig = useTokenStore((s) => s.getGeneratorConfig);
+
+  useEffect(() => {
+    if (!colorTokens) {
+      const config = getGeneratorConfig<ColorLabConfig>('color-lab') ?? DEFAULT_COLOR_LAB_CONFIG;
+      for (const palette of config.palettes) {
+        const generated = generatePalette(palette);
+        setTokenGroup(['color', generated.name], paletteToTokenGroup(generated));
+      }
+    }
+  }, [colorTokens, setTokenGroup, getGeneratorConfig]);
+}
+
+/**
+ * Ensures typography tokens exist in the store.
+ */
+function useEnsureTypographyTokens() {
+  const typographyTokens = useTokenStore((s) => s.tokens.typography);
+  const setTokenGroup = useTokenStore((s) => s.setTokenGroup);
+  const getGeneratorConfig = useTokenStore((s) => s.getGeneratorConfig);
+
+  useEffect(() => {
+    if (!typographyTokens) {
+      const config = getGeneratorConfig<TypographyLabConfig>('typography-lab') ?? DEFAULT_TYPOGRAPHY_LAB_CONFIG;
+      const tokens = generateTypographyTokens({
+        baseFontSize: config.baseFontSize,
+        ratio: config.ratio,
+        stepsAbove: config.stepsAbove,
+        stepsBelow: config.stepsBelow,
+        baseLineHeight: config.lineHeightConfig.base,
+        tightening: config.lineHeightConfig.tightening,
+      });
+
+      const group: TokenGroup = { $type: 'typography' };
+      const fontSize: TokenGroup = { $type: 'dimension' };
+      const lineHeight: TokenGroup = { $type: 'number' };
+      const letterSpacing: TokenGroup = { $type: 'dimension' };
+
+      for (const t of tokens) {
+        fontSize[t.name] = { $value: { value: t.fontSize, unit: 'px' }, $type: 'dimension' } as DesignToken;
+        lineHeight[t.name] = { $value: t.lineHeight, $type: 'number' } as DesignToken;
+        letterSpacing[t.name] = { $value: { value: t.letterSpacing, unit: 'rem' }, $type: 'dimension' } as DesignToken;
+      }
+
+      group['fontSize'] = fontSize;
+      group['lineHeight'] = lineHeight;
+      group['letterSpacing'] = letterSpacing;
+
+      const fontFamily: TokenGroup = { $type: 'fontFamily' };
+      fontFamily['heading'] = { $value: config.fontFamilies.heading.join(', '), $type: 'fontFamily' } as DesignToken;
+      fontFamily['body'] = { $value: config.fontFamilies.body.join(', '), $type: 'fontFamily' } as DesignToken;
+      fontFamily['mono'] = { $value: config.fontFamilies.mono.join(', '), $type: 'fontFamily' } as DesignToken;
+      group['fontFamily'] = fontFamily;
+
+      setTokenGroup(['typography'], group);
+    }
+  }, [typographyTokens, setTokenGroup, getGeneratorConfig]);
 }
 
 /**
@@ -149,6 +217,8 @@ function useGlobalTokenBroadcast() {
 function AppShell() {
   useUndoRedoKeyboard();
   useGlobalTokenBroadcast();
+  useEnsureColorTokens();
+  useEnsureTypographyTokens();
   useEnsureMotionTokens();
   useEnsureSpacingTokens();
   useEnsureShadowTokens();
@@ -185,6 +255,15 @@ export default function App() {
           element={
             <Suspense fallback={<div />}>
               <DemoShell />
+            </Suspense>
+          }
+        />
+        {/* Standalone style site routes */}
+        <Route
+          path="/style-site/*"
+          element={
+            <Suspense fallback={<div />}>
+              <StyleSiteShell />
             </Suspense>
           }
         />

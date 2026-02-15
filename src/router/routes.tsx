@@ -42,6 +42,7 @@ import {
   BookOpen,
   Upload,
   ScanLine,
+  Paintbrush,
 } from 'lucide-react';
 
 // Lazy-loaded tool components
@@ -87,6 +88,9 @@ function BlogPreview() {
 
 // Reverse map tool
 const ReverseMap = lazy(() => import('@/tools/import/reverse-map'));
+
+// Style library
+const StyleLibrary = lazy(() => import('@/tools/library/styles'));
 
 export interface ToolRoute {
   path: string;
@@ -183,6 +187,14 @@ export const toolSections: ToolSection[] = [
     tools: [
       { path: '/data-viz/chart-palette', label: 'Chart Palette', icon: PieChart, component: ChartPalette, description: 'Accessible data visualization colors' },
       { path: '/data-viz/data-ink', label: 'Data-Ink', icon: LineChart, component: DataInk, description: 'Chart styling optimization' },
+    ],
+  },
+  {
+    section: 'Style Library',
+    icon: Paintbrush,
+    group: 'utility',
+    tools: [
+      { path: '/library/styles', label: 'Style Presets', icon: Paintbrush, component: StyleLibrary, description: 'Browse and apply design system presets' },
     ],
   },
   {

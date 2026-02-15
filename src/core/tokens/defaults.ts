@@ -59,8 +59,8 @@ export const DEFAULT_SHADOW_LAB_CONFIG: ShadowLabConfig = {
     channels: [0, 0, 0],
     alpha: 1,
   },
-  ambientOpacity: 0.08,
-  directionalOpacity: 0.12,
+  ambientOpacity: 0.04,
+  directionalOpacity: 0.06,
 };
 
 export const DEFAULT_MOTION_CONFIG: MotionConfig = {

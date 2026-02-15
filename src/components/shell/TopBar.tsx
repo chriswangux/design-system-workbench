@@ -48,6 +48,9 @@ export function TopBar() {
   const handleReset = () => {
     resetProject();
     setShowResetConfirm(false);
+    // Reload to remount all tool components with fresh default state.
+    // Without this, tools keep stale local useState from the previous config.
+    setTimeout(() => window.location.reload(), 100);
   };
 
   return (
