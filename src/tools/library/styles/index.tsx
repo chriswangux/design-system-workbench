@@ -19,6 +19,7 @@ const SITE_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentT
   'corporate': lazy(() => import('./sites/corporate')),
   'editorial': lazy(() => import('./sites/editorial')),
   'fintech-premium': lazy(() => import('./sites/fintech-premium')),
+  'airbnb': lazy(() => import('./sites/airbnb')),
 };
 
 // ---- Helpers ----
@@ -139,7 +140,7 @@ function StyleDetail({ preset, onApply }: { preset: StylePreset; onApply: (p: St
             </Suspense>
             <button
               onClick={openInNewTab}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium rounded-md bg-white/10 text-white/70 hover:bg-white/20 hover:text-white backdrop-blur-sm transition-colors z-10"
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium rounded-md bg-black/50 text-white/90 hover:bg-black/70 hover:text-white backdrop-blur-sm transition-colors z-10"
             >
               <ExternalLink size={11} />
               Open in new tab

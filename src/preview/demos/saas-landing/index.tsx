@@ -36,10 +36,10 @@ const t = {
   sp12: 'var(--spacing-1200, 3rem)',
   sp16: 'var(--spacing-1600, 4rem)',
   // Shadows (names match shadow lab: sm, md, lg, xl, 2xl)
-  shadow1: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
-  shadow2: 'var(--shadow-md, 0 2px 4px rgba(0,0,0,0.06))',
-  shadow3: 'var(--shadow-lg, 0 4px 6px rgba(0,0,0,0.07))',
-  shadow4: 'var(--shadow-xl, 0 8px 16px rgba(0,0,0,0.08))',
+  shadow1: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04))',
+  shadow2: 'var(--shadow-md, 0 2px 6px rgba(0,0,0,0.05))',
+  shadow3: 'var(--shadow-lg, 0 4px 12px rgba(0,0,0,0.06))',
+  shadow4: 'var(--shadow-xl, 0 8px 24px rgba(0,0,0,0.07))',
   // Font sizes
   fsXs: 'var(--typography-fontSize-xs, 0.75rem)',
   fsSm: 'var(--typography-fontSize-sm, 0.875rem)',
@@ -149,7 +149,7 @@ function Button({
       backgroundColor: t.primary,
       color: t.primaryFg,
       border: 'none',
-      boxShadow: hovered ? t.shadow3 : t.shadow1,
+      boxShadow: hovered ? t.shadow2 : t.shadow1,
     },
     secondary: {
       backgroundColor: hovered ? t.secondary : 'transparent',
@@ -634,7 +634,7 @@ function Hero() {
           style={{
             borderRadius: '16px',
             border: `1px solid ${t.border}`,
-            boxShadow: `${t.shadow4}, 0 0 0 1px ${t.border}`,
+            boxShadow: `${t.shadow2}, 0 0 0 1px ${t.border}`,
             overflow: 'hidden',
             background: t.bg,
             position: 'relative',
@@ -1114,7 +1114,7 @@ function PricingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: ()
             height: '20px',
             borderRadius: '50%',
             backgroundColor: '#fff',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
             transition: `left ${t.durationNormal} ${t.easing}`,
           }}
         />
@@ -1221,9 +1221,9 @@ function PricingCard({
           : `1px solid ${t.border}`,
         backgroundColor: t.bg,
         boxShadow: plan.popular
-          ? `${t.shadow4}, 0 0 0 1px ${t.primary}20`
+          ? `${t.shadow2}, 0 0 0 1px ${t.primary}20`
           : hovered
-            ? t.shadow3
+            ? t.shadow2
             : t.shadow1,
         transition: `all ${t.duration} ${t.easing}`,
         transform: hovered ? 'translateY(-4px)' : 'translateY(0)',

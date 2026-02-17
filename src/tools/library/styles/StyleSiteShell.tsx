@@ -10,6 +10,7 @@ const SoftPastelSite = lazy(() => import('./sites/soft-pastel'));
 const CorporateSite = lazy(() => import('./sites/corporate'));
 const EditorialSite = lazy(() => import('./sites/editorial'));
 const FintechPremiumSite = lazy(() => import('./sites/fintech-premium'));
+const AirbnbSite = lazy(() => import('./sites/airbnb'));
 
 function Loading() {
   return (
@@ -40,6 +41,7 @@ export default function StyleSiteShell() {
         <Route path="corporate" element={<CorporateSite />} />
         <Route path="editorial" element={<EditorialSite />} />
         <Route path="fintech-premium" element={<FintechPremiumSite />} />
+        <Route path="airbnb" element={<AirbnbSite />} />
         <Route path="*" element={
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -7,12 +7,18 @@ export function transformColor(color: ColorValue, format: ColorFormat): string {
   switch (format) {
     case 'oklch':
       return toCssString(color);
-    case 'hex':
+    case 'hex': {
+      // hex6 cannot represent alpha — fall back to rgba for semi-transparent colors
+      if (color.alpha !== undefined && color.alpha < 1) {
+        const { r, g, b, a } = toRgb(color);
+        return `rgba(${r}, ${g}, ${b}, ${parseFloat(a.toFixed(4))})`;
+      }
       return toHex(color);
+    }
     case 'rgb': {
       const { r, g, b, a } = toRgb(color);
       return a < 1
-        ? `rgba(${r}, ${g}, ${b}, ${a})`
+        ? `rgba(${r}, ${g}, ${b}, ${parseFloat(a.toFixed(4))})`
         : `rgb(${r}, ${g}, ${b})`;
     }
     case 'hsl': {

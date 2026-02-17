@@ -1037,6 +1037,117 @@ const FINTECH_PRESET: StylePreset = {
 };
 
 // ============================================================================
+// 10. AIRBNB
+// Warm, inviting, human. Coral accent on pristine white. Rounded, generous.
+// ============================================================================
+
+const AIRBNB_COLORS: ColorLabConfig = {
+  palettes: [
+    {
+      id: 'coral',
+      name: 'coral',
+      steps: 11,
+      // Rausch coral/pink — warm, inviting, energetic
+      hue: { start: 358, end: 355, curve: LINEAR },
+      chroma: { start: 0.04, end: 0.16, curve: [0.25, 0.85, 0.65, 0.15] },
+      lightness: { start: 0.97, end: 0.22, curve: EASE_OUT },
+    },
+    {
+      id: 'neutral-warm',
+      name: 'neutral',
+      steps: 11,
+      // Near-achromatic with faint warm tint
+      hue: { start: 30, end: 30, curve: LINEAR },
+      chroma: { start: 0.003, end: 0.003, curve: LINEAR },
+      lightness: { start: 0.98, end: 0.10, curve: LINEAR },
+    },
+  ],
+};
+
+const AIRBNB_TYPOGRAPHY: TypographyLabConfig = {
+  baseFontSize: 16,
+  ratio: 1.25,
+  stepsAbove: 6,
+  stepsBelow: 2,
+  fontFamilies: {
+    heading: ['Circular', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+    body: ['Circular', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+    mono: ['SF Mono', 'Menlo', 'monospace'],
+  },
+  lineHeightConfig: { base: 1.55, tightening: 0.08 },
+};
+
+const AIRBNB_SPACING: SpacingLabConfig = {
+  baseUnit: 8,
+  progression: 'arithmetic',
+  steps: 10,
+};
+
+const AIRBNB_SHADOWS: ShadowLabConfig = {
+  lightSource: { x: 0, y: -0.3, z: 1 },
+  elevationSteps: 5,
+  baseBlur: 3,
+  blurRatio: 2.5,
+  baseOffset: 1,
+  offsetRatio: 1.6,
+  spreadBehavior: 'none',
+  shadowColor: { colorSpace: 'oklch', channels: [0, 0, 0], alpha: 1 },
+  ambientOpacity: 0.08,
+  directionalOpacity: 0.06,
+};
+
+const AIRBNB_MOTION: MotionConfig = {
+  easingCurves: [
+    { id: 'standard', name: 'Standard', type: 'bezier', bezier: [0.2, 0, 0, 1] },
+    { id: 'entrance', name: 'Entrance', type: 'bezier', bezier: [0, 0, 0.1, 1] },
+    { id: 'exit', name: 'Exit', type: 'bezier', bezier: [0.3, 0, 0.8, 1] },
+    { id: 'bounce', name: 'Bounce', type: 'spring', spring: { stiffness: 260, damping: 20, mass: 1 } },
+  ],
+  baseDuration: 150,
+  durationRatio: 1.5,
+  durationSteps: 6,
+};
+
+const AIRBNB_GRID: GridBuilderConfig = {
+  breakpoints: [
+    { name: 'sm', minWidth: 640, columns: 4, gutter: 16, margin: 24 },
+    { name: 'md', minWidth: 768, columns: 8, gutter: 24, margin: 40 },
+    { name: 'lg', minWidth: 1024, columns: 12, gutter: 24, margin: 40 },
+    { name: 'xl', minWidth: 1280, columns: 12, gutter: 32, margin: 40, maxWidth: 1120 },
+  ],
+};
+
+const AIRBNB_PRESET: StylePreset = {
+  id: 'preset-airbnb',
+  siteComponent: 'airbnb',
+  name: 'Airbnb',
+  prompt: {
+    overall: 'Warm, inviting, and human. Coral accent on pristine white backgrounds. Generous whitespace, rounded corners, and friendly typography. Designed for trust and belonging.',
+    characteristics: {
+      typography: "Circular (or system sans fallback) for all text, SF Mono for data. 16px base, major third ratio (1.25). Generous 1.55 line-height. Semibold (600) headings, clean hierarchy with underline links.",
+      colorPhilosophy: "Coral/Rausch pink (#FF385C) as primary accent on warm-tinted neutrals. Near-achromatic grays with faint warm hue (30). Very restrained — accent is used sparingly for CTAs and emphasis, dark text (#222) for headings.",
+      lightMode: "Pristine white foundation (#FFFFFF). Light gray (#F7F7F7) for secondary surfaces. Clean, airy, trustworthy. White space is a core design element.",
+      borders: "Subtle, warm-gray (1px #DDDDDD). Generous border-radius (8-12px for cards, 40px for pills). Borders define space without adding visual weight.",
+      shadows: "Soft, diffuse. 3px base blur, 2.5x ratio. Pure black shadow color but very low opacity (0.06-0.08). Cards gain depth on hover. Booking widget uses elevated shadow.",
+      animations: "Friendly and smooth. cubic-bezier(0.2, 0, 0, 1) standard. 150ms base, 1.5x ratio. Spring physics (stiffness 260) for interactive elements. Nothing abrupt.",
+      interactions: "Hover reveals depth (cards lift). Underline text links. Gradient CTA buttons with subtle scale on hover. Focus on discoverability and warmth.",
+      layout: "Centered content, max-width 1120px. 8px spacing grid. Generous margins (40px). Card-based layouts. Two-column detail+booking pattern. Responsive 4/8/12 grid.",
+    },
+  },
+  generatorConfigs: {
+    'color-lab': AIRBNB_COLORS,
+    'typography-lab': AIRBNB_TYPOGRAPHY,
+    'spacing-lab': AIRBNB_SPACING,
+    'shadow-lab': AIRBNB_SHADOWS,
+    'motion': AIRBNB_MOTION,
+    'grid-builder': AIRBNB_GRID,
+  },
+  colors: ['#FF385C', '#222222', '#717171', '#DDDDDD', '#FFFFFF'],
+  builtIn: true,
+  createdAt: '2025-01-01T00:00:00.000Z',
+};
+
+// ============================================================================
 // EXPORT
 // ============================================================================
 
@@ -1045,6 +1156,7 @@ export const BUILT_IN_PRESETS: StylePreset[] = [
   FINTECH_PRESET,
   LINEAR_PRESET,
   STRIPE_PRESET,
+  AIRBNB_PRESET,
   WARM_EARTH_PRESET,
   NEON_CYBER_PRESET,
   SOFT_PASTEL_PRESET,
